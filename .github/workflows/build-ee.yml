@@ -6,8 +6,8 @@ on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
-  env:
-    IMAGE_NAME: 'test'
+env:
+  IMAGE_NAME: 'test'
 
 jobs:
   build-and-push-ee:
