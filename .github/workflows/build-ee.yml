@@ -59,4 +59,4 @@ jobs:
         with:
           image: ${{ env.IMAGE_FULL_NAME }}
           tags: ${{ env.BUILD_DATE }}
-          registry: quay.io/${{ secrets.QUAY_USER }}
+          registry: quay.io/${{ secrets.QUAY_REPO }}
