@@ -1,0 +1,65 @@
+# .github/workflows/build-ee.yml
+
+name: Build and Push Ansible Execution Environment
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+  env:
+    IMAGE_NAME: 'test'
+
+jobs:
+  build-and-push-ee:
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Get current date
+        run: echo "::set-env name=NOW::$(date +'%Y%m%d%H%M')"
+
+      - name: Prepare Image Name and Tags
+        id: prep
+        run: |
+          echo "IMAGE_FULL_NAME=${{ vars.IMAGE_NAME }}" >> $GITHUB_ENV
+          echo "TAG_SHA=${GITHUB_SHA::8}" >> $GITHUB_ENV
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ansible-builder
+        run: pip install ansible-builder
+
+      - name: Log in to Red Hat Registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: registry.redhat.io
+          username: ${{ secrets.REDHAT_USER }}
+          password: ${{ secrets.REDHAT_PASSWORD }}
+
+      - name: Log in to Quay.io
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USER }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Build EE with ansible-builder
+        run: |
+          echo "INFO: Building Execution Environment with tag: ${{ env.TAG_SHA }}"
+          ansible-builder build \
+            --tag quay.io/${{ env.IMAGE_FULL_NAME }}:${{ env.NOW }} \
+            --context . \
+            --container-runtime podman
+
+      - name: Push the EE image to the registry
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ env.IMAGE_FULL_NAME }}
+          tags: ${{ env.NOW }}
+          registry: quay.io/${{ secrets.QUAY_USER }}

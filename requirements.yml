@@ -1,0 +1,8 @@
+---
+collections:
+  - name: ansible.windows
+  - name: amazon.aws
+  - name: ansible.utils
+  - name: ansible.posix
+  - name: ansible.netcommon
+  - name: containers.podman

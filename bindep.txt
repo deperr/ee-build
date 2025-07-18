@@ -1,0 +1,4 @@
+findutils
+gcc
+make
+python3-netaddr
