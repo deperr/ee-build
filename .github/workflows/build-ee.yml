@@ -58,5 +58,5 @@ jobs:
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ env.IMAGE_FULL_NAME }}
-          tags: ${{ env.BUILD_DATE }} latest
+          tags: ${{ env.BUILD_DATE }}
           registry: quay.io/${{ secrets.QUAY_REPO }}
